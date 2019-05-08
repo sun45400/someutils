@@ -5,10 +5,12 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -21,7 +23,12 @@ public class ExcelUtil {
 
     }
 
-    public static void main(String[] args) throws IllegalAccessException {
+    public static void main(String[] args) throws IOException {
+        tsetInput();
+
+    }
+
+    public static void testOutput() throws IllegalAccessException {
         String path = ExcelUtil.class.getResource("").getPath();
         String file = path + "test.xlsx";
         List<OutputTestObj> list = new LinkedList<OutputTestObj>();
@@ -29,8 +36,28 @@ public class ExcelUtil {
         obj.setField1("123");
         obj.setField2("1324");
         obj.setField3("12345");
+        OutputTestObj obj1 = new OutputTestObj();
+        obj1.setField1("222");
+        obj1.setField3("324");
         list.add(obj);
+        list.add(obj1);
         exportExcelByHeader(file,list);
+    }
+
+    public static void tsetInput() throws IOException {
+        String filePath = "/D:/git/sunbangchao/JavaUtils/someutils/JavaUtils/target/classes/com/colonsun/utils/io/excel/test.xlsx";
+        FileInputStream inputStream = new FileInputStream(filePath);
+        Workbook workbook = new HSSFWorkbook(inputStream);
+        Sheet sheet0 = workbook.getSheetAt(0);
+        for(Row r : sheet0){
+            for(Cell c : r){
+                System.out.print(c.getStringCellValue() + "   ");
+                continue;
+            }
+            System.out.println();
+        }
+        inputStream.close();
+
 
     }
 
@@ -85,7 +112,8 @@ public class ExcelUtil {
                 if(field == null){continue;}
                 if(!field.isAccessible()){field.setAccessible(true);}
                 cell = row.createCell(field.getAnnotation(Header.class).index());
-                cell.setCellValue(field.get(list.get(i)).toString());
+                String cellString = field.get(list.get(i)) == null ? "" : field.get(list.get(i)).toString();
+                cell.setCellValue(cellString);
             }
         }
         File file = new File(filePath);
@@ -93,9 +121,15 @@ public class ExcelUtil {
             file.createNewFile();
             FileOutputStream outputStream = FileUtils.openOutputStream(file);
             workbook.write(outputStream);
-
+            outputStream.close();
         }catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    //导入
+    public static void importExcelBy (String filePath,Class clazz) throws IOException{
+        FileInputStream inputStream = new FileInputStream(filePath);
+        Workbook workbook = new HSSFWorkbook(inputStream);
     }
 }

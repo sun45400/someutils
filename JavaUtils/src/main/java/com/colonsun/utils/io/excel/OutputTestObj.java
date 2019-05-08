@@ -1,14 +1,18 @@
 package com.colonsun.utils.io.excel;
 
-public class OutputTestObj {
+public class OutputTestObj implements Comparable<OutputTestObj>{
+
+    public OutputTestObj(){}
 
     @Header(value = "列1",index = 1)
     private String field1;
 
-    @Header(value = "field2",index = 2)
     private String field2;
 
+    @Header(value = "field2",index = 2)
     private String field3;
+
+    private int order;
 
     public String getField1() {
         return field1;
@@ -34,4 +38,15 @@ public class OutputTestObj {
         this.field3 = field3;
     }
 
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+    public int compareTo(OutputTestObj anotherObj) {
+        return Integer.compare(this.order,anotherObj.order);
+    }
 }
