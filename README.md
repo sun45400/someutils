@@ -1,2 +1,2 @@
 # someutils
-some utils for java
+some utils and tests for java
